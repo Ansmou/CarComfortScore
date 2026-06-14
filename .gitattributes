@@ -1,0 +1,4 @@
+# Git hooks and shell scripts MUST keep LF line endings.
+# On Windows, a CRLF checkout corrupts the "#!/usr/bin/env bash" shebang and the hook fails.
+.githooks/** text eol=lf
+*.sh        text eol=lf
