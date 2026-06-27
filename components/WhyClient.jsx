@@ -1,18 +1,11 @@
 'use client';
-import Link from 'next/link';
-import { FontLoader } from './shared';
+import { FontLoader, SiteNav } from './shared';
 
 export default function WhyClient() {
-  const NAV = [['/', 'RANKINGS'],['/blog','ARTICLES'],['/science','METHODOLOGY'],['/why','WHY THIS EXISTS']];
   return (
     <>
       <FontLoader/>
-      <nav style={{ background:'var(--nav-bg)', borderBottom:'1px solid var(--border)', padding:'0 24px', position:'sticky', top:0, zIndex:100 }}>
-        <div style={{ maxWidth:1200, margin:'0 auto', display:'flex', alignItems:'center', height:52, justifyContent:'space-between' }}>
-          <Link href="/" style={{ fontSize:18, fontFamily:'Barlow Condensed,sans-serif', fontWeight:800, letterSpacing:2, color:'var(--amber)', textDecoration:'none' }}>CAR<span style={{ color:'var(--text3)' }}>COMFORTSCORE</span></Link>
-          <div style={{ display:'flex', gap:2 }}>{NAV.map(([href,l])=><Link key={href} href={href} style={{ padding:'8px 12px', fontSize:10, fontWeight:600, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, color:href==='/why'?'var(--amber)':'var(--text3)', textDecoration:'none', borderBottom:href==='/why'?'2px solid var(--amber)':'2px solid transparent' }}>{l}</Link>)}</div>
-        </div>
-      </nav>
+      <SiteNav activeHref="/why" />
       <div style={{ maxWidth:740, margin:'0 auto', padding:'48px 24px' }}>
         <div style={{ fontSize:9, color:'var(--amber)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:3, marginBottom:12 }}>WHY WE BUILT THIS</div>
         <h1 style={{ fontSize:40, fontFamily:'Barlow Condensed,sans-serif', fontWeight:800, letterSpacing:1, marginBottom:10, lineHeight:1.1, color:'var(--text)' }}>CAR REVIEWS ARE BROKEN.</h1>

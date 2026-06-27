@@ -1,4 +1,4 @@
-import ScienceClient from '../../components/ScienceClient';
+import SciencePageContent from '../../components/SciencePage';
 
 export const metadata = {
   title: 'Methodology — CarComfortScore',
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function SciencePage() {
-  return <ScienceClient />;
+  return <SciencePageContent />;
 }

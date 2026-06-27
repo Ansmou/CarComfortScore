@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { CARS, ARTICLES, CATS, SORTS, SEV_META, IMPACT_PENALTY, FEEDBACK_URL, SITE_NAME, crcs, grade } from '../data/cars';
-import { FontLoader, Bar, ImpactChainTable, MetricChainTable, computeMotionChain, computeAcousticChain, computeImpactChain } from './shared';
+import { FontLoader, SiteNav, Bar, ImpactChainTable, MetricChainTable, computeMotionChain, computeAcousticChain, computeImpactChain } from './shared';
 import DetailDrawer from './DetailDrawer';
 import CompareView from './CompareView';
 import FeedbackModal from './FeedbackModal';
@@ -77,13 +77,7 @@ export default function HomeClient() {
   if (cmpView && cmpList.length === 2) return (
     <>
       <FontLoader/>
-      <nav style={{ background:'var(--nav-bg)', borderBottom:'1px solid var(--border)', padding:'0 24px', position:'sticky', top:0, zIndex:100 }}>
-        <div style={{ maxWidth:960, margin:'0 auto', display:'flex', alignItems:'center', height:52 }}>
-          <Link href="/" style={{ fontSize:18, fontFamily:'Barlow Condensed,sans-serif', fontWeight:800, letterSpacing:2, color:'var(--amber)', textDecoration:'none' }}>
-            CAR<span style={{ color:'var(--text3)' }}>COMFORTSCORE</span>
-          </Link>
-        </div>
-      </nav>
+      <SiteNav activeHref="/" />
       <CompareView cars={cmpList} onBack={() => setCmpView(false)} />
     </>
   );
@@ -91,20 +85,9 @@ export default function HomeClient() {
   return (
     <>
       <FontLoader/>
-      <nav style={{ background:'var(--nav-bg)', borderBottom:'1px solid var(--border)', padding:'0 24px', position:'sticky', top:0, zIndex:100 }}>
-        <div style={{ maxWidth:1200, margin:'0 auto', display:'flex', alignItems:'center', height:52, justifyContent:'space-between' }}>
-          <Link href="/" style={{ fontSize:18, fontFamily:'Barlow Condensed,sans-serif', fontWeight:800, letterSpacing:2, color:'var(--amber)', textDecoration:'none' }}>
-            CAR<span style={{ color:'var(--text3)' }}>COMFORTSCORE</span>
-          </Link>
-          <div style={{ display:'flex', gap:2, alignItems:'center' }}>
-            {[['/', 'RANKINGS'], ['/blog', 'ARTICLES'], ['/science', 'METHODOLOGY'], ['/why', 'WHY THIS EXISTS']].map(([href, l]) => (
-              <Link key={href} href={href} style={{ background:'none', border:'none', padding:'8px 12px', cursor:'pointer', fontSize:10, fontWeight:600, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, color:'var(--text3)', textDecoration:'none', borderBottom:'2px solid transparent' }}>{l}</Link>
-            ))}
-            <button onClick={() => setShowFeedback(true)} style={{ ...iStyle, padding:'5px 10px', cursor:'pointer', fontSize:9, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, marginLeft:6 }}>CONTRIBUTE</button>
-            <button onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')} style={{ ...iStyle, padding:'5px 10px', cursor:'pointer', fontSize:12, marginLeft:4 }}>{theme === 'light' ? '🌙' : '☀️'}</button>
-          </div>
-        </div>
-      </nav>
+      <SiteNav activeHref="/" theme={theme} setTheme={setTheme} extras={
+        <button onClick={() => setShowFeedback(true)} style={{ background:'var(--input-bg)', border:'1px solid var(--input-border)', borderRadius:2, padding:'5px 10px', cursor:'pointer', fontSize:9, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, marginLeft:6 }}>CONTRIBUTE</button>
+      }/>
 
       <div style={{ maxWidth:1200, margin:'0 auto', padding:`0 24px ${cmpMode ? '90px' : '0'}` }}>
         <div style={{ padding:'48px 0 32px', borderBottom:'1px solid var(--border)', marginBottom:24 }}>

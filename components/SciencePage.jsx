@@ -1,4 +1,6 @@
-"use client"
+'use client';
+import { FontLoader, SiteNav } from './shared';
+
 export default function SciencePage() {
   const METRICS = [
     {
@@ -28,6 +30,9 @@ export default function SciencePage() {
   ];
 
   return (
+    <>
+      <FontLoader/>
+      <SiteNav activeHref="/science" />
     <main style={{maxWidth:740,margin:"0 auto",padding:"48px 24px 72px"}}>
       <div style={{fontSize:9,color:"var(--amber)",fontFamily:"IBM Plex Mono, monospace",letterSpacing:3,marginBottom:12}}>MEASUREMENT METHODOLOGY</div>
       <h1 style={{fontSize:40,fontFamily:"Barlow Condensed, sans-serif",fontWeight:800,letterSpacing:1,marginBottom:16,lineHeight:1.1}}>HOW WE SCORE RIDE COMFORT</h1>
@@ -88,5 +93,6 @@ export default function SciencePage() {
         <p style={{fontSize:13,lineHeight:1.8,color:"var(--text2)",margin:0}}>CarComfortScore is an engineering estimate model, not an instrumented laboratory measurement. Scores are derived from published suspension specifications, dimensional data, and tyre specifications. Japan Import versions are scored at approximately 70% component effectiveness to account for typical age-related elastomer degradation. All vehicles are evaluated on the same model with identical weighting — no manufacturer relationships influence any score.</p>
       </div>
     </main>
+    </>
   )
 }

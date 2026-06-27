@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 export const FontLoader = () => (
   <style>{`
@@ -42,6 +43,53 @@ export const FontLoader = () => (
     select,input,button{font-family:'Barlow',sans-serif;}
   `}</style>
 );
+
+const NAV_LINKS = [['/', 'RANKINGS'],['/blog','ARTICLES'],['/science','METHODOLOGY'],['/why','WHY THIS EXISTS']];
+
+export function SiteNav({ activeHref = '/', theme, setTheme, extras }) {
+  const [open, setOpen] = useState(false);
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const c = () => setMobile(window.innerWidth < 720);
+    c(); window.addEventListener('resize', c); return () => window.removeEventListener('resize', c);
+  }, []);
+  const iStyle = { background:'var(--input-bg)', border:'1px solid var(--input-border)', borderRadius:2, padding:'5px 10px', cursor:'pointer' };
+  return (
+    <nav style={{ background:'var(--nav-bg)', borderBottom:'1px solid var(--border)', padding:'0 16px', position:'sticky', top:0, zIndex:100 }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', display:'flex', alignItems:'center', height:52, justifyContent:'space-between' }}>
+        <Link href="/" style={{ fontSize:18, fontFamily:'Barlow Condensed,sans-serif', fontWeight:800, letterSpacing:2, color:'var(--amber)', textDecoration:'none', flexShrink:0 }}>
+          CAR<span style={{ color:'var(--text3)' }}>COMFORTSCORE</span>
+        </Link>
+        {mobile ? (
+          <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+            {setTheme && <button onClick={() => setTheme(t => t==='light'?'dark':'light')} style={{ ...iStyle, fontSize:14 }}>{theme==='light'?'🌙':'☀️'}</button>}
+            <button onClick={() => setOpen(o => !o)} aria-label="Menu" style={{ ...iStyle, display:'flex', flexDirection:'column', gap:4, padding:'8px 10px' }}>
+              <span style={{ display:'block', width:18, height:2, background:open?'var(--amber)':'var(--text3)', borderRadius:1, transition:'background .15s' }}/>
+              <span style={{ display:'block', width:18, height:2, background:open?'var(--amber)':'var(--text3)', borderRadius:1, transition:'background .15s' }}/>
+              <span style={{ display:'block', width:14, height:2, background:open?'var(--amber)':'var(--text3)', borderRadius:1, transition:'background .15s' }}/>
+            </button>
+          </div>
+        ) : (
+          <div style={{ display:'flex', gap:2, alignItems:'center' }}>
+            {NAV_LINKS.map(([href, l]) => (
+              <Link key={href} href={href} style={{ padding:'8px 10px', fontSize:10, fontWeight:600, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, color:href===activeHref?'var(--amber)':'var(--text3)', textDecoration:'none', borderBottom:href===activeHref?'2px solid var(--amber)':'2px solid transparent' }}>{l}</Link>
+            ))}
+            {extras}
+            {setTheme && <button onClick={() => setTheme(t => t==='light'?'dark':'light')} style={{ ...iStyle, fontSize:12, marginLeft:4 }}>{theme==='light'?'🌙':'☀️'}</button>}
+          </div>
+        )}
+      </div>
+      {mobile && open && (
+        <div style={{ background:'var(--nav-bg)', borderBottom:'1px solid var(--border)' }}>
+          {NAV_LINKS.map(([href, l]) => (
+            <Link key={href} href={href} onClick={() => setOpen(false)} style={{ display:'block', padding:'13px 20px', fontSize:12, fontWeight:600, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, color:href===activeHref?'var(--amber)':'var(--text2)', textDecoration:'none', borderLeft:`3px solid ${href===activeHref?'var(--amber)':'transparent'}`, background:href===activeHref?'var(--bg3)':'transparent' }}>{l}</Link>
+          ))}
+          {extras && <div style={{ padding:'10px 20px', borderTop:'1px solid var(--border)' }}>{extras}</div>}
+        </div>
+      )}
+    </nav>
+  );
+}
 
 export function Bar({ val, max = 100, color, height = 3 }) {
   const [w, setW] = useState(0);
