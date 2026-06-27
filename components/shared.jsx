@@ -141,7 +141,7 @@ export function ImpactChainTable({ car }) {
           </div>
         );
       })}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 68px 72px', background:'var(--bg4)', padding:'12px 14px', borderTop:'2px solid var(--border2)' }} title="Road energy that reaches the occupant after the 10-stage absorption chain. Out of an input of 100 units. Lower = better. Floors at 6 — no real vehicle absorbs 100% of road energy.">
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 68px 72px', background:'var(--bg4)', padding:'12px 14px', borderTop:'2px solid var(--border2)' }} title="Road energy that reaches the occupant after the 10-stage absorption chain. Out of an input of 100 units. Lower = better. Floors at 2 — no real vehicle absorbs 100% of road energy.">
         <div style={{ fontSize:9, color:'var(--text3)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, cursor:'help', borderBottom:'1px dotted var(--text4)', display:'inline-block', width:'fit-content' }}>OCCUPANT FELT INTENSITY</div>
         <div style={{ textAlign:'center', fontSize:10, color:'var(--text3)', fontFamily:'IBM Plex Mono,monospace' }}>{100-final}% absorbed</div>
         <div style={{ textAlign:'center', fontSize:26, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:final<=15?'var(--green)':final<=40?'var(--amber)':'var(--red)' }}>{final}</div>
