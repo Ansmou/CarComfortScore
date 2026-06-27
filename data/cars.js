@@ -1,4 +1,8 @@
 // ── CarComfortScore — central data store ──
+// All metric scores are derived from the engineering chain functions in lib/scoring.
+// No hand-curated values — the chain IS the truth.
+import { impactScore, motionScore, acousticScore } from '../lib/scoring';
+export { impactScore, motionScore, acousticScore };
 
 export const CARS = [
   {id:"hilux_revo", name:"Toyota Hilux Revo",    year:"2016+",   market:"PK · New",     cat:"Pickup Truck",      rearType:"leaf_spring",    rearLabel:"Rigid Leaf Spring",             sidewall:172,rimSize:17,wheelbase:3085,weight:1990,tire:"265/65 R17",springTuning:"truck",   platformAge:"mid", bodyType:"ladder",   hasCtb:false,hasRearSubframe:false,hcImpact:"highest"},
@@ -158,11 +162,6 @@ export const ARTICLES = [
 ];
 
 export const IMPACT_PENALTY = { low: 0, mid: -4, high: -10, highest: -15 };
-
-// All metric scores are derived from the engineering chain functions in lib/scoring.
-// No hand-curated values — the chain IS the truth.
-import { impactScore, motionScore, acousticScore } from '../lib/scoring';
-export { impactScore, motionScore, acousticScore };
 
 export const crcs = (c) => Math.max(0, Math.round(
   impactScore(c) * 0.35 + motionScore(c) * 0.40 + acousticScore(c) * 0.25 + (IMPACT_PENALTY[c.hcImpact] || 0)
