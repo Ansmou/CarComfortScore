@@ -23,15 +23,19 @@ function CarCard({ car, onSelect, cmpList, onCmpToggle, cmpMode }) {
       <div style={{ fontSize:9, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', marginBottom:3 }}>{car.year} · {car.market}</div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:8 }}>
         <div style={{ fontSize:14, fontWeight:700, fontFamily:'Barlow Condensed,sans-serif', letterSpacing:.5, color:'var(--text)', lineHeight:1.2, flex:1, paddingRight:8 }}>{car.name.toUpperCase()}</div>
-        <div style={{ textAlign:'right', flexShrink:0 }}>
-          <div style={{ fontSize:28, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:g.color, lineHeight:1 }}>{score}</div>
-          <div style={{ fontSize:8, color:g.color, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1 }}>{g.label}</div>
+        <div style={{ textAlign:'right', flexShrink:0 }} title={`Composite Ride Comfort Score — ${score}/100. Calculated as Impact×0.35 + Motion×0.40 + Acoustic×0.25 minus a WBV penalty for harsh suspension types. Higher is better.`}>
+          <div style={{ fontSize:28, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:g.color, lineHeight:1, cursor:'help' }}>{score}</div>
+          <div style={{ fontSize:8, color:g.color, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, cursor:'help' }}>{g.label}</div>
         </div>
       </div>
-      {[{l:'IMPACT',v:s,c:'var(--amber)'},{l:'MOTION',v:f,c:'var(--blue)'},{l:'ACOUSTIC',v:n,c:'var(--green)'}].map(item => (
-        <div key={item.l} style={{ marginBottom:5 }}>
-          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:2 }}>
-            <span style={{ fontSize:8, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1 }}>{item.l}</span>
+      {[
+        {l:'IMPACT',  v:s, c:'var(--amber)', t:'Impact Isolation (0–100, weight 35%). How well the vehicle absorbs sharp jolts — potholes, bumps, road discontinuities.'},
+        {l:'MOTION',  v:f, c:'var(--blue)',  t:'Ride Motion Comfort (0–100, weight 40%). Body float / pitch on undulating roads. The single biggest factor in long-drive fatigue.'},
+        {l:'ACOUSTIC',v:n, c:'var(--green)', t:'Cabin Acoustic Environment (0–100, weight 25%). Road noise and structural vibration inside the cabin.'},
+      ].map(item => (
+        <div key={item.l} style={{ marginBottom:5 }} title={item.t}>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:2, cursor:'help' }}>
+            <span style={{ fontSize:8, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, borderBottom:'1px dotted var(--text4)' }}>{item.l}</span>
             <span style={{ fontSize:9, fontWeight:600, fontFamily:'IBM Plex Mono,monospace', color:item.c }}>{item.v}</span>
           </div>
           <Bar val={item.v} color={item.c} height={2} />
