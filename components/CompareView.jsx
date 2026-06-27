@@ -34,10 +34,16 @@ export default function CompareView({ cars, onBack }) {
               <span style={{ color:rm.color, fontSize:8, fontFamily:'IBM Plex Mono,monospace', fontWeight:600 }}>{rm.emoji} {car.rearLabel}</span>
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', borderTop:'1px solid var(--border)', paddingTop:8, gap:2 }}>
-              {[{l:'CRCS',v:sc,c:g.color},{l:'FELT',v:felt,c:felt<=20?'var(--green)':felt<=45?'var(--amber)':'var(--red)'},{l:'S',v:impactScore(car),c:'var(--amber)'},{l:'M',v:motionScore(car),c:'var(--blue)'},{l:'A',v:acousticScore(car),c:'var(--green)'}].map(m=>(
-                <div key={m.l}>
+              {[
+                {l:'CRCS',v:sc,c:g.color,t:'Composite Ride Comfort Score (0–100). Weighted: S×0.35 + M×0.40 + A×0.25 − WBV penalty.'},
+                {l:'FELT',v:felt,c:felt<=20?'var(--green)':felt<=45?'var(--amber)':'var(--red)',t:'Road energy that reaches the occupant after the 10-stage absorption chain. Lower = better. Floors at 6 (no real car absorbs 100%).'},
+                {l:'S',v:impactScore(car),c:'var(--amber)',t:'Impact Isolation (0–100). How well the vehicle absorbs sharp jolts — potholes, bumps. Higher = better.'},
+                {l:'M',v:motionScore(car),c:'var(--blue)',t:'Ride Motion Comfort (0–100). Body float / pitch / rock on undulating roads. Higher = better.'},
+                {l:'A',v:acousticScore(car),c:'var(--green)',t:'Cabin Acoustic Environment (0–100). Road noise and structural vibration in the cabin. Higher = better.'},
+              ].map(m=>(
+                <div key={m.l} title={m.t} style={{ cursor:'help' }}>
                   <div style={{ fontSize:mobile?14:18, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:m.c, lineHeight:1 }}>{m.v}</div>
-                  <div style={{ fontSize:7, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', marginTop:1 }}>{m.l}</div>
+                  <div style={{ fontSize:7, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', marginTop:1, borderBottom:'1px dotted var(--text4)', display:'inline-block' }}>{m.l}</div>
                 </div>
               ))}
             </div>
