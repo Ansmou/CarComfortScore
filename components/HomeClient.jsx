@@ -42,7 +42,12 @@ function CarCard({ car, onSelect, cmpList, onCmpToggle, cmpMode }) {
         </div>
       ))}
       {!cmpMode && <div style={{ marginTop:8, fontSize:8, color:'var(--amber)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, borderTop:'1px solid var(--border)', paddingTop:6 }}>TAP FOR ANALYSIS ↗</div>}
-      <div style={{ fontSize:9, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', marginTop:cmpMode?8:0 }}>{car.cat}</div>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:6, fontSize:9, fontFamily:'IBM Plex Mono,monospace', marginTop:cmpMode?8:0 }}>
+        <span style={{ color:'var(--text4)' }}>{car.cat}</span>
+        {(() => { const sev = SEV_META[car.hcImpact]; return (
+          <span title={`Whole-Body Vibration character — ${sev.label}. ${sev.desc} (ISO 2631-1)`} style={{ color:sev.color, background:`${sev.color}14`, border:`1px solid ${sev.color}33`, borderRadius:2, padding:'1px 6px', letterSpacing:.5, cursor:'help' }}>WBV · {sev.label.toUpperCase()}</span>
+        ); })()}
+      </div>
     </div>
   );
 }
