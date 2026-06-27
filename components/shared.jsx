@@ -2,8 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-export const FontLoader = () => (
-  <style>{`
+const FONT_CSS = `
     @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700;800&family=Barlow:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root[data-theme="dark"]{
@@ -41,8 +40,8 @@ export const FontLoader = () => (
     ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
     a{color:inherit;}
     select,input,button{font-family:'Barlow',sans-serif;}
-  `}</style>
-);
+  `;
+export const FontLoader = () => <style dangerouslySetInnerHTML={{ __html: FONT_CSS }} />;
 
 const NAV_LINKS = [['/', 'RANKINGS'],['/blog','ARTICLES'],['/science','METHODOLOGY'],['/why','WHY THIS EXISTS']];
 
