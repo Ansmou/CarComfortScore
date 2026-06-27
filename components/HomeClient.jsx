@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { CARS, ARTICLES, CATS, SORTS, SEV_META, IMPACT_PENALTY, FEEDBACK_URL, SITE_NAME, crcs, grade } from '../data/cars';
+import { CARS, ARTICLES, CATS, SORTS, SEV_META, IMPACT_PENALTY, FEEDBACK_URL, SITE_NAME, crcs, grade, impactScore, motionScore, acousticScore } from '../data/cars';
 import { FontLoader, SiteNav, Bar, ImpactChainTable, MetricChainTable, computeMotionChain, computeAcousticChain, computeImpactChain } from './shared';
 import DetailDrawer from './DetailDrawer';
 import CompareView from './CompareView';
@@ -9,6 +9,7 @@ import FeedbackModal from './FeedbackModal';
 
 function CarCard({ car, onSelect, cmpList, onCmpToggle, cmpMode }) {
   const score = crcs(car), g = grade(score);
+  const s = impactScore(car), f = motionScore(car), n = acousticScore(car);
   const inCmp = cmpList.some(c => c.id === car.id), canAdd = cmpList.length < 2;
   return (
     <div
@@ -27,7 +28,7 @@ function CarCard({ car, onSelect, cmpList, onCmpToggle, cmpMode }) {
           <div style={{ fontSize:8, color:g.color, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1 }}>{g.label}</div>
         </div>
       </div>
-      {[{l:'IMPACT',v:car.s,c:'var(--amber)'},{l:'MOTION',v:car.f,c:'var(--blue)'},{l:'ACOUSTIC',v:car.n,c:'var(--green)'}].map(item => (
+      {[{l:'IMPACT',v:s,c:'var(--amber)'},{l:'MOTION',v:f,c:'var(--blue)'},{l:'ACOUSTIC',v:n,c:'var(--green)'}].map(item => (
         <div key={item.l} style={{ marginBottom:5 }}>
           <div style={{ display:'flex', justifyContent:'space-between', marginBottom:2 }}>
             <span style={{ fontSize:8, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1 }}>{item.l}</span>
@@ -65,9 +66,9 @@ export default function HomeClient() {
     .filter(c => c.name.toLowerCase().includes(search.toLowerCase()) || c.year.includes(search))
     .sort((a, b) => {
       if (sortBy === 'Overall Score')       return crcs(b) - crcs(a);
-      if (sortBy === 'Impact Isolation')     return b.s - a.s;
-      if (sortBy === 'Ride Motion')          return b.f - a.f;
-      if (sortBy === 'Cabin Quiet')          return b.n - a.n;
+      if (sortBy === 'Impact Isolation')     return impactScore(b) - impactScore(a);
+      if (sortBy === 'Ride Motion')          return motionScore(b) - motionScore(a);
+      if (sortBy === 'Cabin Quiet')          return acousticScore(b) - acousticScore(a);
       if (sortBy === 'WBV Severity (best)') { const o={low:0,mid:1,high:2,highest:3}; return (o[a.hcImpact]||0)-(o[b.hcImpact]||0); }
       return 0;
     });

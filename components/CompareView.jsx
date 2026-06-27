@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { REAR_META, SEV_META, crcs, grade } from '../data/cars';
+import { REAR_META, SEV_META, crcs, grade, impactScore, motionScore, acousticScore } from '../data/cars';
 import { IMPACT_CHAIN, computeImpactChain, computeMotionChain, computeAcousticChain, MetricChainTable } from './shared';
 
 export default function CompareView({ cars, onBack }) {
@@ -34,7 +34,7 @@ export default function CompareView({ cars, onBack }) {
               <span style={{ color:rm.color, fontSize:8, fontFamily:'IBM Plex Mono,monospace', fontWeight:600 }}>{rm.emoji} {car.rearLabel}</span>
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', borderTop:'1px solid var(--border)', paddingTop:8, gap:2 }}>
-              {[{l:'CRCS',v:sc,c:g.color},{l:'FELT',v:felt,c:felt<=20?'var(--green)':felt<=45?'var(--amber)':'var(--red)'},{l:'S',v:car.s,c:'var(--amber)'},{l:'M',v:car.f,c:'var(--blue)'},{l:'A',v:car.n,c:'var(--green)'}].map(m=>(
+              {[{l:'CRCS',v:sc,c:g.color},{l:'FELT',v:felt,c:felt<=20?'var(--green)':felt<=45?'var(--amber)':'var(--red)'},{l:'S',v:impactScore(car),c:'var(--amber)'},{l:'M',v:motionScore(car),c:'var(--blue)'},{l:'A',v:acousticScore(car),c:'var(--green)'}].map(m=>(
                 <div key={m.l}>
                   <div style={{ fontSize:mobile?14:18, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:m.c, lineHeight:1 }}>{m.v}</div>
                   <div style={{ fontSize:7, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', marginTop:1 }}>{m.l}</div>
@@ -75,9 +75,9 @@ export default function CompareView({ cars, onBack }) {
               {cars.map((car,i)=><div key={car.id} style={{ fontSize:mobile?9:10, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:COLORS[i], textAlign:'center' }}>{mobile?car.name.split(' ').slice(0,2).join(' ').toUpperCase():car.name.toUpperCase()}</div>)}
             </div>
             {[
-              { label:'IMPACT ISOLATION', weight:'35%', color:'var(--amber)', get:c=>c.s },
-              { label:'RIDE MOTION', weight:'40%', color:'var(--blue)', get:c=>c.f },
-              { label:'CABIN ACOUSTIC', weight:'25%', color:'var(--green)', get:c=>c.n },
+              { label:'IMPACT ISOLATION', weight:'35%', color:'var(--amber)', get:impactScore },
+              { label:'RIDE MOTION', weight:'40%', color:'var(--blue)', get:motionScore },
+              { label:'CABIN ACOUSTIC', weight:'25%', color:'var(--green)', get:acousticScore },
             ].map(m=>(
               <div key={m.label} style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', padding:'10px 12px', borderBottom:'1px solid var(--border)' }}>
                 <div style={{ alignSelf:'center' }}>
@@ -239,7 +239,7 @@ export default function CompareView({ cars, onBack }) {
           <div style={{ display:'grid', gridTemplateColumns:mobile?'1fr':'1fr 1fr', gap:14 }}>
             {cars.map((car,i)=>(
               <div key={car.id}>
-                <div style={{ fontSize:10, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:COLORS[i], marginBottom:8, padding:'6px 10px', background:'var(--bg3)', borderRadius:2, borderLeft:`3px solid ${COLORS[i]}` }}>{car.name.toUpperCase()} · MOTION {car.f}/100</div>
+                <div style={{ fontSize:10, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:COLORS[i], marginBottom:8, padding:'6px 10px', background:'var(--bg3)', borderRadius:2, borderLeft:`3px solid ${COLORS[i]}` }}>{car.name.toUpperCase()} · MOTION {motionScore(car)}/100</div>
                 <MetricChainTable chain={motionChains[i]} color="var(--blue)"/>
               </div>
             ))}
@@ -257,7 +257,7 @@ export default function CompareView({ cars, onBack }) {
           <div style={{ display:'grid', gridTemplateColumns:mobile?'1fr':'1fr 1fr', gap:14 }}>
             {cars.map((car,i)=>(
               <div key={car.id}>
-                <div style={{ fontSize:10, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:COLORS[i], marginBottom:8, padding:'6px 10px', background:'var(--bg3)', borderRadius:2, borderLeft:`3px solid ${COLORS[i]}` }}>{car.name.toUpperCase()} · ACOUSTIC {car.n}/100</div>
+                <div style={{ fontSize:10, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:COLORS[i], marginBottom:8, padding:'6px 10px', background:'var(--bg3)', borderRadius:2, borderLeft:`3px solid ${COLORS[i]}` }}>{car.name.toUpperCase()} · ACOUSTIC {acousticScore(car)}/100</div>
                 <MetricChainTable chain={acousticChains[i]} color="var(--green)"/>
               </div>
             ))}

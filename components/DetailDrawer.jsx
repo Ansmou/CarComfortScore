@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { REAR_META, SEV_META, IMPACT_PENALTY, crcs, grade } from '../data/cars';
+import { REAR_META, SEV_META, IMPACT_PENALTY, crcs, grade, impactScore, motionScore, acousticScore } from '../data/cars';
 import { ImpactChainTable, MetricChainTable, computeImpactChain, computeMotionChain, computeAcousticChain } from './shared';
 
 export default function DetailDrawer({ car, onClose }) {
@@ -14,15 +14,16 @@ export default function DetailDrawer({ car, onClose }) {
   }, []);
   const score = crcs(car), g = grade(score), rm = REAR_META[car.rearType], sev = SEV_META[car.hcImpact];
   const impFinal = computeImpactChain(car).slice(-1)[0]?.remaining ?? 0;
+  const sVal = impactScore(car), fVal = motionScore(car), nVal = acousticScore(car);
 
   const METRICS = [
-    { id:'impact',   label:'Impact Isolation',    short:'IMPACT',   score:car.s, color:'var(--amber)',  weight:'35%',
+    { id:'impact',   label:'Impact Isolation',    short:'IMPACT',   score:sVal, color:'var(--amber)',  weight:'35%',
       desc:'How effectively the vehicle attenuates discrete high-energy inputs — potholes, stone strikes, road discontinuities. Based on ISO 2631-1 vertical impact response.',
       highlight:`${impFinal}/100 normalized input energy reaches the occupant.` },
-    { id:'motion',   label:'Ride Motion Comfort',  short:'MOTION',   score:car.f, color:'var(--blue)',   weight:'40%',
+    { id:'motion',   label:'Ride Motion Comfort',  short:'MOTION',   score:fVal, color:'var(--blue)',   weight:'40%',
       desc:'Body motion quality — pitch, roll, and vertical acceleration in the 0.5–8 Hz range of maximum human vestibular sensitivity. Determines what occupants describe as softness.',
       highlight:`${car.springTuning==='comfort'?'Comfort-calibrated springs — optimised for road texture attenuation.':car.springTuning==='truck'?'Truck-calibrated springs — for payload, not comfort.':'Standard spring calibration.'}` },
-    { id:'acoustic', label:'Cabin Acoustic Env.',   short:'ACOUSTIC', score:car.n, color:'var(--green)',  weight:'25%',
+    { id:'acoustic', label:'Cabin Acoustic Env.',   short:'ACOUSTIC', score:nVal, color:'var(--green)',  weight:'25%',
       desc:'Structure-borne vibration and airborne noise in the occupied cabin. Covers the 20–250 Hz NVH perception range. Most perceptible on sustained highway driving.',
       highlight:`${car.platformAge==='new'?'Current-platform NVH specification.':car.platformAge==='old'?'Legacy NVH specification.':'Mid-generation NVH.'}` },
   ];
