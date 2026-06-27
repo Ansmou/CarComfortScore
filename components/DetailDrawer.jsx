@@ -1,29 +1,37 @@
 'use client';
-import { useState } from 'react';
-import { REAR_META, SEV_META, IMPACT_PENALTY, crcs, grade } from '../data/cars';
+import { useState, useEffect } from 'react';
+import { REAR_META, SEV_META, IMPACT_PENALTY, crcs, grade, impactScore, motionScore, acousticScore } from '../data/cars';
 import { ImpactChainTable, MetricChainTable, computeImpactChain, computeMotionChain, computeAcousticChain } from './shared';
 
 export default function DetailDrawer({ car, onClose }) {
   const [tab, setTab] = useState('overview');
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
   const score = crcs(car), g = grade(score), rm = REAR_META[car.rearType], sev = SEV_META[car.hcImpact];
   const impFinal = computeImpactChain(car).slice(-1)[0]?.remaining ?? 0;
+  const sVal = impactScore(car), fVal = motionScore(car), nVal = acousticScore(car);
 
   const METRICS = [
-    { id:'impact',   label:'Impact Isolation',    short:'IMPACT',   score:car.s, color:'var(--amber)',  weight:'35%',
+    { id:'impact',   label:'Impact Isolation',    short:'IMPACT',   score:sVal, color:'var(--amber)',  weight:'35%',
       desc:'How effectively the vehicle attenuates discrete high-energy inputs — potholes, stone strikes, road discontinuities. Based on ISO 2631-1 vertical impact response.',
       highlight:`${impFinal}/100 normalized input energy reaches the occupant.` },
-    { id:'motion',   label:'Ride Motion Comfort',  short:'MOTION',   score:car.f, color:'var(--blue)',   weight:'40%',
+    { id:'motion',   label:'Ride Motion Comfort',  short:'MOTION',   score:fVal, color:'var(--blue)',   weight:'40%',
       desc:'Body motion quality — pitch, roll, and vertical acceleration in the 0.5–8 Hz range of maximum human vestibular sensitivity. Determines what occupants describe as softness.',
       highlight:`${car.springTuning==='comfort'?'Comfort-calibrated springs — optimised for road texture attenuation.':car.springTuning==='truck'?'Truck-calibrated springs — for payload, not comfort.':'Standard spring calibration.'}` },
-    { id:'acoustic', label:'Cabin Acoustic Env.',   short:'ACOUSTIC', score:car.n, color:'var(--green)',  weight:'25%',
+    { id:'acoustic', label:'Cabin Acoustic Env.',   short:'ACOUSTIC', score:nVal, color:'var(--green)',  weight:'25%',
       desc:'Structure-borne vibration and airborne noise in the occupied cabin. Covers the 20–250 Hz NVH perception range. Most perceptible on sustained highway driving.',
       highlight:`${car.platformAge==='new'?'Current-platform NVH specification.':car.platformAge==='old'?'Legacy NVH specification.':'Mid-generation NVH.'}` },
   ];
 
   return (
-    <div style={{ position:'fixed',inset:0,zIndex:1000,display:'flex',justifyContent:'flex-end' }} onClick={onClose}>
-      <div style={{ width:'min(640px,100vw)',height:'100vh',background:'var(--bg2)',borderLeft:'1px solid var(--border2)',overflowY:'auto',boxShadow:'-20px 0 60px rgba(0,0,0,.3)',animation:'slideRight .3s ease both' }} onClick={e=>e.stopPropagation()}>
-        <style>{`@keyframes slideRight{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}`}</style>
+    <div style={{ position:'fixed',inset:0,zIndex:1000,...(isMobile?{}:{display:'flex',justifyContent:'flex-end'}) }} onClick={onClose}>
+      <div style={{ width:isMobile?'100vw':'min(640px,100vw)',height:'100vh',background:'var(--bg2)',borderLeft:isMobile?'none':'1px solid var(--border2)',overflowY:'auto',boxShadow:'-20px 0 60px rgba(0,0,0,.3)',animation:isMobile?'slideUp .3s ease both':'slideRight .3s ease both' }} onClick={e=>e.stopPropagation()}>
+        <style>{`@keyframes slideRight{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
         <div style={{ position:'sticky',top:0,background:'var(--bg2)',borderBottom:'1px solid var(--border2)',zIndex:10,padding:'16px 20px' }}>
           <div style={{ display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10 }}>
@@ -65,7 +73,7 @@ export default function DetailDrawer({ car, onClose }) {
               <p style={{ fontSize:12,color:'var(--text2)',lineHeight:1.7 }}>{sev.desc}</p>
               {(car.hcImpact==='high'||car.hcImpact==='highest')&&<p style={{ fontSize:11,color:sev.color,marginTop:6,fontFamily:'IBM Plex Mono,monospace' }}>PENALTY: −{Math.abs(IMPACT_PENALTY[car.hcImpact])} pts applied to CRCS</p>}
             </div>
-            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:6,marginBottom:12 }}>
+            <div style={{ display:'grid',gridTemplateColumns:isMobile?'1fr 1fr':'1fr 1fr 1fr 1fr',gap:6,marginBottom:12 }}>
               {[{l:'WHEELBASE',v:`${car.wheelbase}mm`},{l:'WEIGHT',v:`${car.weight}kg`},{l:'TYRE',v:car.tire||'—'},{l:'SIDEWALL',v:`${car.sidewall}mm`}].map(item=>(
                 <div key={item.l} style={{ background:'var(--bg3)',border:'1px solid var(--border)',borderRadius:2,padding:'8px 10px' }}>
                   <div style={{ fontSize:8,color:'var(--text4)',fontFamily:'IBM Plex Mono,monospace',letterSpacing:1,marginBottom:2 }}>{item.l}</div>

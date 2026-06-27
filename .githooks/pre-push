@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+#
+# Pre-push reminder: enforce "test before customers see it" for the main branch.
+# Pushing to main auto-deploys to production on Vercel, so pause and confirm a test was done.
+#
+# Enable once per clone with:   git config core.hooksPath .githooks
+# Bypass intentionally with:     git push --no-verify
+#
+protected="refs/heads/main"
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "$protected" ]; then
+    echo ""
+    echo "  ============================================================"
+    echo "   WARNING: pushing to MAIN deploys LIVE to customers (~1-2 min)"
+    echo "   -> https://car-comfort-score.vercel.app/"
+    echo "  ============================================================"
+    echo ""
+    echo "   Did you test this change?"
+    echo "     - Local:   npm run dev   (http://localhost:3000)"
+    echo "     - Preview: push a feature branch -> Vercel builds a private URL"
+    echo ""
+
+    if { exec 3< /dev/tty ; } 2>/dev/null; then
+      printf "   Type 'yes' to deploy to production: "
+      read -r answer <&3
+      exec 3<&-
+      if [ "$answer" != "yes" ]; then
+        echo ""
+        echo "   x Push aborted. Test first, then push again."
+        echo "     (If you already tested and want to skip this: git push --no-verify)"
+        exit 1
+      fi
+      echo "   ok - proceeding with production deploy."
+    else
+      echo "   (non-interactive shell - reminder only, push continues)"
+    fi
+  fi
+done
+
+exit 0
