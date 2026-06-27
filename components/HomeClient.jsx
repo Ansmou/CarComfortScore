@@ -1,14 +1,14 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { CARS, ARTICLES, CATS, SORTS, REAR_META, SEV_META, IMPACT_PENALTY, FEEDBACK_URL, SITE_NAME, crcs, grade } from '../data/cars';
+import { CARS, ARTICLES, CATS, SORTS, SEV_META, IMPACT_PENALTY, FEEDBACK_URL, SITE_NAME, crcs, grade } from '../data/cars';
 import { FontLoader, Bar, ImpactChainTable, MetricChainTable, computeMotionChain, computeAcousticChain, computeImpactChain } from './shared';
 import DetailDrawer from './DetailDrawer';
 import CompareView from './CompareView';
 import FeedbackModal from './FeedbackModal';
 
 function CarCard({ car, onSelect, cmpList, onCmpToggle, cmpMode }) {
-  const score = crcs(car), g = grade(score), rm = REAR_META[car.rearType];
+  const score = crcs(car), g = grade(score);
   const inCmp = cmpList.some(c => c.id === car.id), canAdd = cmpList.length < 2;
   return (
     <div
@@ -26,9 +26,6 @@ function CarCard({ car, onSelect, cmpList, onCmpToggle, cmpMode }) {
           <div style={{ fontSize:28, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:g.color, lineHeight:1 }}>{score}</div>
           <div style={{ fontSize:8, color:g.color, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1 }}>{g.label}</div>
         </div>
-      </div>
-      <div style={{ display:'inline-flex', alignItems:'center', gap:4, background:rm.bg, border:`1px solid ${rm.border}`, borderRadius:2, padding:'2px 8px', marginBottom:10 }}>
-        <span style={{ color:rm.color, fontSize:9, fontFamily:'IBM Plex Mono,monospace', fontWeight:600 }}>{rm.emoji} {car.rearLabel}</span>
       </div>
       {[{l:'IMPACT',v:car.s,c:'var(--amber)'},{l:'MOTION',v:car.f,c:'var(--blue)'},{l:'ACOUSTIC',v:car.n,c:'var(--green)'}].map(item => (
         <div key={item.l} style={{ marginBottom:5 }}>
@@ -109,36 +106,20 @@ export default function HomeClient() {
         </div>
       </nav>
 
-      <div style={{ maxWidth:1200, margin:'0 auto', padding:'0 24px' }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', padding:`0 24px ${cmpMode ? '90px' : '0'}` }}>
         <div style={{ padding:'48px 0 32px', borderBottom:'1px solid var(--border)', marginBottom:24 }}>
           <div style={{ maxWidth:620 }}>
             <div style={{ fontSize:9, color:'var(--amber)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:3, marginBottom:12 }}>PAKISTAN VEHICLE COMFORT ANALYSIS · 2024–25</div>
             <h1 style={{ fontSize:44, fontFamily:'Barlow Condensed,sans-serif', fontWeight:800, letterSpacing:1, lineHeight:1, marginBottom:14, color:'var(--text)' }}>WHICH VEHICLE<br/><span style={{ color:'var(--amber)' }}>PROTECTS YOUR BODY?</span></h1>
-            <p style={{ fontSize:14, color:'var(--hero-sub)', lineHeight:1.9, marginBottom:22 }}>Engineering-based ride quality scores across 55 vehicles. Based on ISO 2631-1 whole-body vibration standards. Tap any vehicle for a full component-by-component analysis.</p>
+            <p style={{ fontSize:14, color:'var(--hero-sub)', lineHeight:1.8, marginBottom:8 }}>Every bump, pothole, and road vibration your car lets through — measured and scored for 55 vehicles in Pakistan. A higher score means less harshness reaches you.</p>
+            <p style={{ fontSize:13, color:'var(--text4)', lineHeight:1.7, marginBottom:22 }}>Based on real suspension specs and tyre data. Tap any vehicle for a full breakdown. <Link href="/science" style={{ color:'var(--amber)', textDecoration:'none' }}>How scores are calculated →</Link></p>
             <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-              {!cmpMode ? (
-                <button onClick={() => { setCmpMode(true); setSel(null); setCmpList([]); }} style={{ background:'var(--amber)', color:'#fff', border:'none', borderRadius:2, padding:'10px 22px', fontSize:11, fontWeight:700, cursor:'pointer', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1 }}>COMPARE 2 VEHICLES →</button>
-              ) : (
-                <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-                  <div style={{ background:'var(--green-dim)', border:'1px solid rgba(26,158,74,.3)', borderRadius:2, padding:'8px 14px', fontSize:10, color:'var(--green)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:.5 }}>
-                    {cmpList.length === 0 ? 'SELECT 2 VEHICLES' : cmpList.length === 1 ? `${cmpList[0].name.toUpperCase()} — SELECT 1 MORE` : `${cmpList[0].name.toUpperCase()} vs ${cmpList[1].name.toUpperCase()}`}
-                  </div>
-                  {cmpList.length === 2 && <button onClick={() => setCmpView(true)} style={{ background:'var(--green)', color:'#fff', border:'none', borderRadius:2, padding:'8px 18px', fontSize:10, fontWeight:700, cursor:'pointer', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1 }}>RUN ANALYSIS →</button>}
-                  <button onClick={() => { setCmpMode(false); setCmpList([]); }} style={{ ...iStyle, padding:'8px 14px', fontSize:10, cursor:'pointer', fontFamily:'IBM Plex Mono,monospace' }}>CANCEL</button>
-                </div>
-              )}
+              {!cmpMode
+                ? <button onClick={() => { setCmpMode(true); setSel(null); setCmpList([]); }} style={{ background:'var(--amber)', color:'#fff', border:'none', borderRadius:2, padding:'10px 22px', fontSize:11, fontWeight:700, cursor:'pointer', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1 }}>COMPARE 2 VEHICLES →</button>
+                : <span style={{ fontSize:11, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', alignSelf:'center' }}>Compare mode active — select vehicles below</span>
+              }
             </div>
           </div>
-        </div>
-
-        {cmpMode && <div style={{ background:'var(--green-dim)', border:'1px solid rgba(26,158,74,.25)', borderRadius:2, padding:'10px 16px', marginBottom:12, fontSize:10, color:'var(--green)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:.5 }}>✦ COMPARE MODE · SELECT ANY 2 VEHICLES · THEN TAP "RUN ANALYSIS"</div>}
-
-        <div style={{ display:'flex', gap:6, marginBottom:14, flexWrap:'wrap' }}>
-          {Object.entries(REAR_META).map(([k, v]) => (
-            <div key={k} style={{ display:'inline-flex', alignItems:'center', gap:4, background:v.bg, border:`1px solid ${v.border}`, borderRadius:2, padding:'3px 10px' }}>
-              <span style={{ color:v.color, fontSize:9, fontFamily:'IBM Plex Mono,monospace', fontWeight:600 }}>{v.emoji} {v.label.toUpperCase()}</span>
-            </div>
-          ))}
         </div>
 
         <div style={{ display:'flex', gap:8, marginBottom:18, flexWrap:'wrap', alignItems:'center' }}>
@@ -172,11 +153,23 @@ export default function HomeClient() {
           </div>
           <div>
             <div style={{ fontSize:9, color:'var(--amber)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:2, marginBottom:10 }}>DISCLAIMER</div>
-            <p style={{ fontSize:11, lineHeight:1.7, color:'var(--text4)' }}>Engineering estimates. Not lab measurements. JDM imports at ~70% component effectiveness. Same model for all vehicles. No manufacturer relationships.</p>
+            <p style={{ fontSize:11, lineHeight:1.7, color:'var(--text4)' }}>Engineering estimates. Not lab measurements. Japan Import versions scored at ~70% component effectiveness to account for age-related wear. Same model for all vehicles. No manufacturer relationships.</p>
           </div>
         </div>
       </div>
 
+      {cmpMode && (
+        <div style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'var(--nav-bg)', borderTop:'2px solid var(--green)', padding:'12px 24px', display:'flex', alignItems:'center', gap:12, flexWrap:'wrap', boxShadow:'0 -4px 24px rgba(0,0,0,.18)' }}>
+          <div style={{ fontSize:9, color:'var(--green)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:2, flexShrink:0 }}>✦ COMPARE</div>
+          <div style={{ flex:1, minWidth:160, background:'var(--green-dim)', border:'1px solid rgba(26,158,74,.3)', borderRadius:2, padding:'8px 14px', fontSize:10, color:'var(--green)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:.5 }}>
+            {cmpList.length === 0 ? 'TAP ANY 2 VEHICLES TO SELECT' : cmpList.length === 1 ? `${cmpList[0].name.toUpperCase()} — SELECT 1 MORE` : `${cmpList[0].name.toUpperCase()} vs ${cmpList[1].name.toUpperCase()}`}
+          </div>
+          <div style={{ display:'flex', gap:8, flexShrink:0 }}>
+            {cmpList.length === 2 && <button onClick={() => setCmpView(true)} style={{ background:'var(--green)', color:'#fff', border:'none', borderRadius:2, padding:'10px 20px', fontSize:10, fontWeight:700, cursor:'pointer', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1 }}>RUN ANALYSIS →</button>}
+            <button onClick={() => { setCmpMode(false); setCmpList([]); }} style={{ background:'var(--bg3)', border:'1px solid var(--border)', borderRadius:2, padding:'10px 14px', fontSize:10, cursor:'pointer', fontFamily:'IBM Plex Mono,monospace', color:'var(--text3)' }}>CANCEL</button>
+          </div>
+        </div>
+      )}
       {sel && !cmpMode && <DetailDrawer car={sel} onClose={() => setSel(null)} />}
       {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} />}
     </>
