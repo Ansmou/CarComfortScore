@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { REAR_META, SEV_META, crcs, grade, impactScore, motionScore, acousticScore } from '../data/cars';
-import { IMPACT_CHAIN, computeImpactChain, computeMotionChain, computeAcousticChain, MetricChainTable, ShareButton } from './shared';
+import { IMPACT_CHAIN, computeImpactChain, computeMotionChain, computeAcousticChain, MetricChainTable, ShareButton, HelpHover } from './shared';
 
 export default function CompareView({ cars, onBack }) {
   const [exp, setExp] = useState(null);
@@ -35,15 +35,19 @@ export default function CompareView({ cars, onBack }) {
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', borderTop:'1px solid var(--border)', paddingTop:8, gap:2 }}>
               {[
-                {l:'CRCS',v:sc,c:g.color,t:'Composite Ride Comfort Score (0–100). Weighted: S×0.35 + M×0.40 + A×0.25 − WBV penalty.'},
+                {l:'CRCS',v:sc,c:g.color,t:'Composite Ride Comfort Score (CRCS), 0–100. Weighted: Impact×0.35 + Motion×0.40 + Acoustic×0.25 minus a Whole-Body Vibration penalty. Higher = better.'},
                 {l:'FELT',v:felt,c:felt<=20?'var(--green)':felt<=45?'var(--amber)':'var(--red)',t:'Road energy that reaches the occupant after the 10-stage absorption chain. Lower = better. Floors at 2 (no real vehicle absorbs 100%).'},
-                {l:'S',v:impactScore(car),c:'var(--amber)',t:'Impact Isolation (0–100). How well the vehicle absorbs sharp jolts — potholes, bumps. Higher = better.'},
-                {l:'M',v:motionScore(car),c:'var(--blue)',t:'Ride Motion Comfort (0–100). Body float / pitch / rock on undulating roads. Higher = better.'},
-                {l:'A',v:acousticScore(car),c:'var(--green)',t:'Cabin Acoustic Environment (0–100). Road noise and structural vibration in the cabin. Higher = better.'},
+                {l:'S',v:impactScore(car),c:'var(--amber)',t:'S = Impact Isolation (0–100). How well the vehicle absorbs sharp jolts — potholes, bumps. Higher = better.'},
+                {l:'M',v:motionScore(car),c:'var(--blue)',t:'M = Ride Motion Comfort (0–100). Body float / pitch / rock on undulating roads. Higher = better.'},
+                {l:'A',v:acousticScore(car),c:'var(--green)',t:'A = Cabin Acoustic Environment (0–100). Road noise and structural vibration in the cabin. Higher = better.'},
               ].map(m=>(
-                <div key={m.l} title={m.t} style={{ cursor:'help' }}>
-                  <div style={{ fontSize:mobile?14:18, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:m.c, lineHeight:1 }}>{m.v}</div>
-                  <div style={{ fontSize:7, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', marginTop:1, borderBottom:'1px dotted var(--text4)', display:'inline-block' }}>{m.l}</div>
+                <div key={m.l}>
+                  <HelpHover text={m.t}>
+                    <span style={{ display:'block', textAlign:'center' }}>
+                      <span style={{ display:'block', fontSize:mobile?14:18, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:m.c, lineHeight:1 }}>{m.v}</span>
+                      <span style={{ display:'inline-block', fontSize:7, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', marginTop:1, borderBottom:'1px dotted var(--text4)' }}>{m.l}</span>
+                    </span>
+                  </HelpHover>
                 </div>
               ))}
             </div>
@@ -155,9 +159,15 @@ export default function CompareView({ cars, onBack }) {
         </div>
       )}
 
-      {/* ── IMPACT ── */}
-      {tab==='impact'&&(
-        <div>
+      {/* ── IMPACT ── (shown in overview too) */}
+      {(tab==='overview'||tab==='impact')&&(
+        <div style={{ marginTop: tab==='overview' ? 28 : 0 }}>
+          {tab==='overview' && (
+            <div style={{ marginBottom:14, borderTop:'1px solid var(--border)', paddingTop:18 }}>
+              <div style={{ fontSize:9, color:'var(--amber)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:3, marginBottom:6 }}>IMPACT CHAIN · 35% WEIGHT</div>
+              <div style={{ fontSize:18, fontFamily:'Barlow Condensed,sans-serif', fontWeight:700, color:'var(--text)' }}>Road-to-occupant absorption</div>
+            </div>
+          )}
           <p style={{ fontSize:12, color:'var(--text2)', lineHeight:1.7, marginBottom:12 }}>100 units of normalized impact energy. Each component absorbs some — or adds some back. Tap any row to see why the scores differ between these two vehicles.</p>
           <div style={{ overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
             <div style={{ minWidth:480 }}>
@@ -244,9 +254,15 @@ export default function CompareView({ cars, onBack }) {
         </div>
       )}
 
-      {/* ── MOTION ── */}
-      {tab==='motion'&&(
-        <div>
+      {/* ── MOTION ── (shown in overview too) */}
+      {(tab==='overview'||tab==='motion')&&(
+        <div style={{ marginTop: tab==='overview' ? 28 : 0 }}>
+          {tab==='overview' && (
+            <div style={{ marginBottom:14, borderTop:'1px solid var(--border)', paddingTop:18 }}>
+              <div style={{ fontSize:9, color:'var(--blue)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:3, marginBottom:6 }}>MOTION CHAIN · 40% WEIGHT</div>
+              <div style={{ fontSize:18, fontFamily:'Barlow Condensed,sans-serif', fontWeight:700, color:'var(--text)' }}>Body motion control</div>
+            </div>
+          )}
           <div style={{ background:'var(--blue-dim)', border:'1px solid rgba(42,110,200,.3)', borderRadius:4, padding:'12px 14px', marginBottom:14 }}>
             <div style={{ fontSize:9, color:'var(--blue)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:2, marginBottom:4 }}>RIDE MOTION COMFORT · 40% WEIGHT</div>
             <p style={{ fontSize:12, color:'var(--text2)', lineHeight:1.7, margin:0 }}>Body motion quality — pitch, roll, and vertical acceleration in the 0.5–8 Hz range of maximum human vestibular sensitivity. Determines what occupants describe as softness.</p>
@@ -262,9 +278,15 @@ export default function CompareView({ cars, onBack }) {
         </div>
       )}
 
-      {/* ── ACOUSTIC ── */}
-      {tab==='acoustic'&&(
-        <div>
+      {/* ── ACOUSTIC ── (shown in overview too) */}
+      {(tab==='overview'||tab==='acoustic')&&(
+        <div style={{ marginTop: tab==='overview' ? 28 : 0 }}>
+          {tab==='overview' && (
+            <div style={{ marginBottom:14, borderTop:'1px solid var(--border)', paddingTop:18 }}>
+              <div style={{ fontSize:9, color:'var(--green)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:3, marginBottom:6 }}>ACOUSTIC CHAIN · 25% WEIGHT</div>
+              <div style={{ fontSize:18, fontFamily:'Barlow Condensed,sans-serif', fontWeight:700, color:'var(--text)' }}>Cabin noise &amp; vibration</div>
+            </div>
+          )}
           <div style={{ background:'var(--green-dim)', border:'1px solid rgba(26,158,74,.3)', borderRadius:4, padding:'12px 14px', marginBottom:14 }}>
             <div style={{ fontSize:9, color:'var(--green)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:2, marginBottom:4 }}>CABIN ACOUSTIC ENV · 25% WEIGHT</div>
             <p style={{ fontSize:12, color:'var(--text2)', lineHeight:1.7, margin:0 }}>Structure-borne vibration and airborne noise in the occupied cabin. Covers the 20–250 Hz NVH perception range. Most perceptible on sustained highway driving.</p>

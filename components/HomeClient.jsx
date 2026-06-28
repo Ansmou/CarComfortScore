@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { CARS, ARTICLES, CATS, SORTS, SEV_META, IMPACT_PENALTY, FEEDBACK_URL, SITE_NAME, crcs, grade, impactScore, motionScore, acousticScore } from '../data/cars';
-import { FontLoader, SiteNav, Bar, ImpactChainTable, MetricChainTable, computeMotionChain, computeAcousticChain, computeImpactChain } from './shared';
+import { FontLoader, SiteNav, Bar, HelpHover, ImpactChainTable, MetricChainTable, computeMotionChain, computeAcousticChain, computeImpactChain } from './shared';
 import DetailDrawer from './DetailDrawer';
 import CompareView from './CompareView';
 import FeedbackModal from './FeedbackModal';
@@ -23,19 +23,23 @@ function CarCard({ car, onSelect, cmpList, onCmpToggle, cmpMode }) {
       <div style={{ fontSize:9, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', marginBottom:3 }}>{car.year} · {car.market}</div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:8 }}>
         <div style={{ fontSize:14, fontWeight:700, fontFamily:'Barlow Condensed,sans-serif', letterSpacing:.5, color:'var(--text)', lineHeight:1.2, flex:1, paddingRight:8 }}>{car.name.toUpperCase()}</div>
-        <div style={{ textAlign:'right', flexShrink:0 }} title={`Composite Ride Comfort Score — ${score}/100. Calculated as Impact×0.35 + Motion×0.40 + Acoustic×0.25 minus a WBV penalty for harsh suspension types. Higher is better.`}>
-          <div style={{ fontSize:28, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:g.color, lineHeight:1, cursor:'help' }}>{score}</div>
-          <div style={{ fontSize:8, color:g.color, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, cursor:'help' }}>{g.label}</div>
-        </div>
+        <HelpHover text={`Composite Ride Comfort Score (CRCS) — ${score}/100. Calculated as Impact×0.35 + Motion×0.40 + Acoustic×0.25 minus a WBV penalty for harsh suspension types. Higher = better.`}>
+          <span style={{ display:'block', textAlign:'right', flexShrink:0 }}>
+            <span style={{ display:'block', fontSize:28, fontWeight:700, fontFamily:'IBM Plex Mono,monospace', color:g.color, lineHeight:1 }}>{score}</span>
+            <span style={{ display:'block', fontSize:8, color:g.color, fontFamily:'IBM Plex Mono,monospace', letterSpacing:1 }}>{g.label}</span>
+          </span>
+        </HelpHover>
       </div>
       {[
         {l:'IMPACT',  v:s, c:'var(--amber)', t:'Impact Isolation (0–100, weight 35%). How well the vehicle absorbs sharp jolts — potholes, bumps, road discontinuities.'},
         {l:'MOTION',  v:f, c:'var(--blue)',  t:'Ride Motion Comfort (0–100, weight 40%). Body float / pitch on undulating roads. The single biggest factor in long-drive fatigue.'},
         {l:'ACOUSTIC',v:n, c:'var(--green)', t:'Cabin Acoustic Environment (0–100, weight 25%). Road noise and structural vibration inside the cabin.'},
       ].map(item => (
-        <div key={item.l} style={{ marginBottom:5 }} title={item.t}>
-          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:2, cursor:'help' }}>
-            <span style={{ fontSize:8, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, borderBottom:'1px dotted var(--text4)' }}>{item.l}</span>
+        <div key={item.l} style={{ marginBottom:5 }}>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:2 }}>
+            <HelpHover text={item.t}>
+              <span style={{ fontSize:8, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, borderBottom:'1px dotted var(--text4)' }}>{item.l}</span>
+            </HelpHover>
             <span style={{ fontSize:9, fontWeight:600, fontFamily:'IBM Plex Mono,monospace', color:item.c }}>{item.v}</span>
           </div>
           <Bar val={item.v} color={item.c} height={2} />
@@ -45,7 +49,9 @@ function CarCard({ car, onSelect, cmpList, onCmpToggle, cmpMode }) {
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:6, fontSize:9, fontFamily:'IBM Plex Mono,monospace', marginTop:cmpMode?8:0 }}>
         <span style={{ color:'var(--text4)' }}>{car.cat}</span>
         {(() => { const sev = SEV_META[car.hcImpact]; return (
-          <span title={`Whole-Body Vibration character — ${sev.label}. ${sev.desc} (ISO 2631-1)`} style={{ color:sev.color, background:`${sev.color}14`, border:`1px solid ${sev.color}33`, borderRadius:2, padding:'1px 6px', letterSpacing:.5, cursor:'help' }}>WBV · {sev.label.toUpperCase()}</span>
+          <HelpHover text={`Whole-Body Vibration (WBV) character — ${sev.label}. ${sev.desc} ISO 2631-1 standard. Tap any car for the full breakdown.`}>
+            <span style={{ color:sev.color, background:`${sev.color}14`, border:`1px solid ${sev.color}33`, borderRadius:2, padding:'1px 6px', letterSpacing:.5 }}>WBV · {sev.label.toUpperCase()}</span>
+          </HelpHover>
         ); })()}
       </div>
     </div>
@@ -143,7 +149,7 @@ export default function HomeClient() {
           <div style={{ maxWidth:680 }}>
             <div style={{ fontSize:9, color:'var(--amber)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:3, marginBottom:12 }}>PAKISTAN VEHICLE COMFORT ANALYSIS</div>
             <h1 style={{ fontSize:44, fontFamily:'Barlow Condensed,sans-serif', fontWeight:800, letterSpacing:1, lineHeight:1, marginBottom:14, color:'var(--text)' }}>WHICH VEHICLE<br/><span style={{ color:'var(--amber)' }}>PROTECTS YOUR BODY?</span></h1>
-            <p style={{ fontSize:14, color:'var(--hero-sub)', lineHeight:1.8, marginBottom:14 }}>Every bump, pothole, and vibration your car lets through — measured and scored for {CARS.length} vehicles in Pakistan. Higher score = less harshness reaches you.</p>
+            <p style={{ fontSize:14, color:'var(--hero-sub)', lineHeight:1.8, marginBottom:14 }}>Every bump, pothole, and vibration your car lets through — measured and combined into a <strong>Composite Ride Comfort Score (CRCS)</strong> for {CARS.length} vehicles in Pakistan. Higher = less harshness reaches you.</p>
             <div style={{ display:'flex', flexWrap:'wrap', gap:'4px 14px', fontSize:10, color:'var(--text4)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1.5, marginBottom:18 }}>
               <span>✓ {CARS.length} VEHICLES</span>
               <span>✓ ISO 2631-1 STANDARD</span>
@@ -175,7 +181,7 @@ export default function HomeClient() {
             {[
               { icon:'🔍', title:'TAP ANY CAR', desc:'Get the 10-stage absorption chain, motion and acoustic breakdown, and the WBV verdict.' },
               { icon:'⚖️', title:'COMPARE 2 CARS', desc:'Side-by-side analysis. See exactly where one beats the other — and by how much.' },
-              { icon:'📐', title:'SORT BY WHAT MATTERS', desc:'Overall score, impact, motion, cabin quiet, or WBV severity for long-term health.' },
+              { icon:'📐', title:'SORT BY WHAT MATTERS', desc:'Overall score, impact, motion, cabin quiet, or Whole-Body Vibration (WBV) severity for long-term health.' },
             ].map(item => (
               <div key={item.title} style={{ background:'var(--bg2)', border:'1px solid var(--border)', borderRadius:4, padding:'14px 16px' }}>
                 <div style={{ fontSize:20, marginBottom:6 }}>{item.icon}</div>

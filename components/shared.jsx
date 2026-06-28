@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { IMPACT_CHAIN, MOTION_CHAIN, ACOUSTIC_CHAIN, computeImpactChain, computeMotionChain, computeAcousticChain, impactScore, motionScore, acousticScore } from '../lib/scoring';
 export { IMPACT_CHAIN, MOTION_CHAIN, ACOUSTIC_CHAIN, computeImpactChain, computeMotionChain, computeAcousticChain, impactScore, motionScore, acousticScore };
@@ -89,6 +89,57 @@ export function SiteNav({ activeHref = '/', theme, setTheme, extras }) {
         </div>
       )}
     </nav>
+  );
+}
+
+// Hover-or-tap explainer. Hover shows on desktop; tap toggles on mobile.
+// Uses position:fixed so it escapes parent overflow:hidden.
+export function HelpHover({ text, children, inline = true }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0, place: 'top' });
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open || !ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    const place = r.top > 220 ? 'top' : 'bottom';
+    setPos({
+      top: place === 'top' ? r.top - 8 : r.bottom + 8,
+      left: Math.min(window.innerWidth - 140, Math.max(140, r.left + r.width / 2)),
+      place,
+    });
+    const onScroll = () => setOpen(false);
+    const onClickOut = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('click', onClickOut);
+    return () => { window.removeEventListener('scroll', onScroll); document.removeEventListener('click', onClickOut); };
+  }, [open]);
+
+  const Wrapper = inline ? 'span' : 'div';
+  return (
+    <>
+      <Wrapper ref={ref}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+        style={{ cursor:'help', display: inline ? 'inline-block' : 'block' }}
+      >
+        {children}
+      </Wrapper>
+      {open && (
+        <span style={{
+          position:'fixed', top:pos.top, left:pos.left,
+          transform: pos.place === 'top' ? 'translate(-50%, -100%)' : 'translate(-50%, 0)',
+          width:260, background:'var(--bg2)', color:'var(--text2)',
+          border:'1px solid var(--border2)', borderRadius:4, padding:'10px 12px',
+          fontSize:11, lineHeight:1.55, zIndex:2000,
+          boxShadow:'0 6px 24px rgba(0,0,0,.3)', textAlign:'left',
+          fontWeight:'normal', pointerEvents:'none', fontFamily:'Barlow,sans-serif',
+        }}>
+          {text}
+        </span>
+      )}
+    </>
   );
 }
 
