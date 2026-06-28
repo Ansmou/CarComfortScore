@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { REAR_META, SEV_META, crcs, grade, impactScore, motionScore, acousticScore } from '../data/cars';
-import { IMPACT_CHAIN, computeImpactChain, computeMotionChain, computeAcousticChain, MetricChainTable } from './shared';
+import { IMPACT_CHAIN, computeImpactChain, computeMotionChain, computeAcousticChain, MetricChainTable, ShareButton } from './shared';
 
 export default function CompareView({ cars, onBack }) {
   const [exp, setExp] = useState(null);
@@ -63,7 +63,16 @@ export default function CompareView({ cars, onBack }) {
 
   return (
     <div style={{ maxWidth:960, margin:'0 auto', padding:`28px ${mobile?12:20}px` }}>
-      <button onClick={onBack} style={{ display:'flex', alignItems:'center', gap:8, background:'none', border:'none', color:'var(--text3)', cursor:'pointer', fontSize:13, marginBottom:18, fontFamily:'IBM Plex Mono,monospace' }}>← BACK</button>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18, gap:10, flexWrap:'wrap' }}>
+        <button onClick={onBack} style={{ display:'flex', alignItems:'center', gap:8, background:'none', border:'none', color:'var(--text3)', cursor:'pointer', fontSize:13, fontFamily:'IBM Plex Mono,monospace' }}>← BACK</button>
+        <ShareButton
+          url={typeof window!=='undefined'?`${window.location.origin}/?compare=${cars[0].id},${cars[1].id}`:''}
+          title={`${cars[0].name} vs ${cars[1].name} — comfort comparison`}
+          text={`${cars[0].name} (CRCS ${crcs(cars[0])}) vs ${cars[1].name} (CRCS ${crcs(cars[1])}). Engineering-based ride comfort comparison:`}
+          label="SHARE COMPARISON"
+          accent="var(--green)"
+        />
+      </div>
       <div style={{ marginBottom:14 }}>
         <div style={{ fontSize:9, color:'var(--amber)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:3, marginBottom:4 }}>VEHICLE COMPARISON</div>
         <h2 style={{ fontSize:mobile?22:28, fontFamily:'Barlow Condensed,sans-serif', fontWeight:700, letterSpacing:1, color:'var(--text)', marginBottom:4 }}>SIDE-BY-SIDE ANALYSIS</h2>

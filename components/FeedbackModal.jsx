@@ -6,7 +6,7 @@ export default function FeedbackModal({ onClose }) {
     <div style={{ position:'fixed',inset:0,zIndex:2000,background:'rgba(0,0,0,.5)',display:'flex',alignItems:'center',justifyContent:'center',padding:20 }} onClick={onClose}>
       <div style={{ background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:4,padding:'24px 28px',maxWidth:400,width:'100%' }} onClick={e=>e.stopPropagation()}>
         <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16 }}>
-          <div style={{ fontSize:9,color:'var(--amber)',fontFamily:'IBM Plex Mono,monospace',letterSpacing:3 }}>CONTRIBUTE</div>
+          <div style={{ fontSize:9,color:'var(--amber)',fontFamily:'IBM Plex Mono,monospace',letterSpacing:3 }}>CONTACT</div>
           <button onClick={onClose} style={{ background:'none',border:'none',color:'var(--text3)',cursor:'pointer',fontSize:18 }}>×</button>
         </div>
         <h3 style={{ fontSize:22,fontFamily:'Barlow Condensed,sans-serif',fontWeight:700,letterSpacing:.5,marginBottom:8,color:'var(--text)' }}>TALK TO THE DEVELOPER</h3>

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { REAR_META, SEV_META, IMPACT_PENALTY, crcs, grade, impactScore, motionScore, acousticScore } from '../data/cars';
-import { ImpactChainTable, MetricChainTable, computeImpactChain, computeMotionChain, computeAcousticChain } from './shared';
+import { ImpactChainTable, MetricChainTable, ShareButton, computeImpactChain, computeMotionChain, computeAcousticChain } from './shared';
 
 export default function DetailDrawer({ car, onClose }) {
   const [tab, setTab] = useState('overview');
@@ -47,12 +47,19 @@ export default function DetailDrawer({ car, onClose }) {
               <button onClick={onClose} style={{ background:'var(--bg3)',border:'1px solid var(--border)',borderRadius:2,width:30,height:30,cursor:'pointer',fontSize:16,color:'var(--text3)' }}>×</button>
             </div>
           </div>
-          <div style={{ display:'flex',gap:6,flexWrap:'wrap',marginBottom:10 }}>
+          <div style={{ display:'flex',gap:6,flexWrap:'wrap',marginBottom:10,alignItems:'center' }}>
             <div style={{ display:'inline-flex',alignItems:'center',gap:4,background:rm.bg,border:`1px solid ${rm.border}`,borderRadius:2,padding:'3px 10px' }}>
               <span style={{ color:rm.color,fontSize:10,fontFamily:'IBM Plex Mono,monospace',fontWeight:600 }}>{rm.emoji} {car.rearLabel}</span>
             </div>
             <div style={{ display:'inline-flex',alignItems:'center',gap:4,background:`${sev.color}12`,border:`1px solid ${sev.color}28`,borderRadius:2,padding:'3px 10px' }}>
               <span style={{ color:sev.color,fontSize:10,fontFamily:'IBM Plex Mono,monospace',fontWeight:600 }}>WBV · {sev.label.toUpperCase()}</span>
+            </div>
+            <div style={{ marginLeft:'auto' }}>
+              <ShareButton
+                url={typeof window!=='undefined'?`${window.location.origin}/?car=${car.id}`:''}
+                title={`${car.name} — CRCS ${score}/100`}
+                text={`${car.name}: ${score}/100 ride comfort. Impact ${sVal}, Motion ${fVal}, Acoustic ${nVal}. See full engineering breakdown:`}
+              />
             </div>
           </div>
           <div style={{ display:'flex',gap:2 }}>
@@ -116,6 +123,16 @@ export default function DetailDrawer({ car, onClose }) {
             </div>
             <MetricChainTable chain={computeAcousticChain(car)} color="var(--green)"/>
           </div>)}
+
+          <div style={{ marginTop:16, padding:'14px 16px', background:'var(--bg3)', border:'1px solid var(--border)', borderLeft:'3px solid var(--amber)', borderRadius:0 }}>
+            <p style={{ fontSize:12, color:'var(--text2)', lineHeight:1.7, marginBottom:8 }}>Pakistanis don't talk about ride quality. Help fix that — share this breakdown with someone car-shopping.</p>
+            <ShareButton
+              url={typeof window!=='undefined'?`${window.location.origin}/?car=${car.id}`:''}
+              title={`${car.name} — CRCS ${score}/100`}
+              text={`${car.name}: ${score}/100 ride comfort. Impact ${sVal}, Motion ${fVal}, Acoustic ${nVal}. See full engineering breakdown:`}
+              label="SHARE THIS CAR"
+            />
+          </div>
         </div>
       </div>
     </div>

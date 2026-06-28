@@ -92,6 +92,33 @@ export function SiteNav({ activeHref = '/', theme, setTheme, extras }) {
   );
 }
 
+// Web Share API with clipboard fallback. Returns 'shared' | 'copied' | 'failed'.
+export async function shareLink(url, title, text) {
+  if (typeof navigator === 'undefined') return 'failed';
+  if (navigator.share) {
+    try { await navigator.share({ title, text, url }); return 'shared'; } catch (e) { if (e.name === 'AbortError') return 'failed'; }
+  }
+  if (navigator.clipboard) {
+    try { await navigator.clipboard.writeText(url); return 'copied'; } catch {}
+  }
+  return 'failed';
+}
+
+export function ShareButton({ url, title, text, label = 'SHARE', accent = 'var(--amber)' }) {
+  const [state, setState] = useState('idle');
+  const onClick = async (e) => {
+    e.stopPropagation();
+    const result = await shareLink(url, title, text);
+    if (result === 'shared') return;
+    if (result === 'copied') { setState('copied'); setTimeout(() => setState('idle'), 2000); }
+  };
+  return (
+    <button onClick={onClick} title={`Share — ${title}`} style={{ background:'transparent', border:`1px solid ${accent}66`, color:accent, borderRadius:2, padding:'5px 12px', fontSize:10, fontWeight:600, cursor:'pointer', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1, display:'inline-flex', alignItems:'center', gap:6 }}>
+      <span>{state === 'copied' ? '✓ COPIED' : '↗ ' + label}</span>
+    </button>
+  );
+}
+
 export function Bar({ val, max = 100, color, height = 3 }) {
   const [w, setW] = useState(0);
   useEffect(() => { const t = setTimeout(() => setW((val / max) * 100), 80); return () => clearTimeout(t); }, [val, max]);
