@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { FontLoader, SiteNav } from './shared';
+import { FontLoader, SiteNav, resolveTokens } from './shared';
 
 export default function BlogClient({ articles }) {
   return (
@@ -19,8 +19,8 @@ export default function BlogClient({ articles }) {
                 onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.borderColor='var(--card-border)';}}>
                 <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'linear-gradient(90deg,var(--amber),transparent)' }}/>
                 <div style={{ fontSize:9, color:'var(--amber)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:2, marginBottom:8 }}>{article.category} · {article.readTime}</div>
-                <h2 style={{ fontSize:18, fontFamily:'Barlow Condensed,sans-serif', fontWeight:700, letterSpacing:.5, color:'var(--text)', marginBottom:12, lineHeight:1.2 }}>{article.title.toUpperCase()}</h2>
-                <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.7, marginBottom:16 }}>{article.summary}</p>
+                <h2 style={{ fontSize:18, fontFamily:'Barlow Condensed,sans-serif', fontWeight:700, letterSpacing:.5, color:'var(--text)', marginBottom:12, lineHeight:1.2 }}>{resolveTokens(article.title).toUpperCase()}</h2>
+                <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.7, marginBottom:16 }}>{resolveTokens(article.summary)}</p>
                 <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:16 }}>
                   {article.cars.map(c=><span key={c} style={{ fontSize:9, color:'var(--text3)', background:'var(--bg3)', border:'1px solid var(--border)', borderRadius:2, padding:'2px 8px', fontFamily:'IBM Plex Mono,monospace' }}>{c}</span>)}
                 </div>

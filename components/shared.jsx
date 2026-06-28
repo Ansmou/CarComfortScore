@@ -92,6 +92,42 @@ export function SiteNav({ activeHref = '/', theme, setTheme, extras }) {
   );
 }
 
+// ── Article token resolver ──
+// Replaces {{fn:carId}} or {{fn:carIdA,carIdB}} with live values so articles
+// never go stale when scoring or specs change. Supported tokens:
+//   {{name:civic_11pk}} → car's display name
+//   {{crcs:fortuner}} or {{score:fortuner}} → composite CRCS
+//   {{impact:fortuner}} → impact isolation 0–100
+//   {{motion:fortuner}} → motion comfort
+//   {{acoustic:fortuner}} → acoustic
+//   {{felt:fortuner}} → residual road energy (lower = better)
+//   {{gap:a,b}} → |crcs(a) − crcs(b)|
+//   {{impact-gap:a,b}} → |impact(a) − impact(b)|
+import { CARS as _CARS_, crcs as _crcs_ } from '../data/cars';
+import { impactScore as _imp_, motionScore as _mot_, acousticScore as _aco_, computeImpactChain as _chain_ } from '../lib/scoring';
+export function resolveTokens(text) {
+  if (typeof text !== 'string') return text;
+  return text.replace(/\{\{([a-z-]+):([\w,_]+)\}\}/gi, (full, fn, arg) => {
+    if (fn === 'gap' || fn === 'impact-gap') {
+      const [idA, idB] = arg.split(',');
+      const a = _CARS_.find(c => c.id === idA), b = _CARS_.find(c => c.id === idB);
+      if (!a || !b) return '??';
+      return fn === 'gap' ? Math.abs(_crcs_(a) - _crcs_(b)) : Math.abs(_imp_(a) - _imp_(b));
+    }
+    const car = _CARS_.find(c => c.id === arg);
+    if (!car) return '??';
+    switch (fn) {
+      case 'name': return car.name;
+      case 'crcs': case 'score': return _crcs_(car);
+      case 'impact': return _imp_(car);
+      case 'motion': return _mot_(car);
+      case 'acoustic': return _aco_(car);
+      case 'felt': return _chain_(car).slice(-1)[0].remaining;
+      default: return full;
+    }
+  });
+}
+
 // Hover-or-tap explainer. Hover shows on desktop; tap toggles on mobile.
 // Uses position:fixed so it escapes parent overflow:hidden.
 export function HelpHover({ text, children, inline = true }) {

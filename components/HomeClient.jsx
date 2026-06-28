@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { CARS, ARTICLES, CATS, SORTS, SEV_META, IMPACT_PENALTY, FEEDBACK_URL, SITE_NAME, crcs, grade, impactScore, motionScore, acousticScore } from '../data/cars';
-import { FontLoader, SiteNav, Bar, HelpHover, ImpactChainTable, MetricChainTable, computeMotionChain, computeAcousticChain, computeImpactChain } from './shared';
+import { FontLoader, SiteNav, Bar, HelpHover, resolveTokens, ImpactChainTable, MetricChainTable, computeMotionChain, computeAcousticChain, computeImpactChain } from './shared';
 import DetailDrawer from './DetailDrawer';
 import CompareView from './CompareView';
 import FeedbackModal from './FeedbackModal';
@@ -213,8 +213,8 @@ export default function HomeClient() {
                   onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.borderColor='var(--card-border)';}}>
                   <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'linear-gradient(90deg,var(--amber),transparent)' }}/>
                   <div style={{ fontSize:9, color:'var(--amber)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:2, marginBottom:8 }}>{a.category} · {a.readTime}</div>
-                  <h3 style={{ fontSize:16, fontFamily:'Barlow Condensed,sans-serif', fontWeight:700, letterSpacing:.5, color:'var(--text)', marginBottom:8, lineHeight:1.25 }}>{a.title.toUpperCase()}</h3>
-                  <p style={{ fontSize:12, color:'var(--text3)', lineHeight:1.6, marginBottom:10 }}>{a.summary}</p>
+                  <h3 style={{ fontSize:16, fontFamily:'Barlow Condensed,sans-serif', fontWeight:700, letterSpacing:.5, color:'var(--text)', marginBottom:8, lineHeight:1.25 }}>{resolveTokens(a.title).toUpperCase()}</h3>
+                  <p style={{ fontSize:12, color:'var(--text3)', lineHeight:1.6, marginBottom:10 }}>{resolveTokens(a.summary)}</p>
                   <div style={{ fontSize:10, color:'var(--amber)', fontFamily:'IBM Plex Mono,monospace', letterSpacing:1 }}>READ →</div>
                 </div>
               </Link>
